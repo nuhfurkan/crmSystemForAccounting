@@ -9,7 +9,7 @@ import pymysql
 import sqlalchemy
 from sqlalchemy.orm import column_property
 from werkzeug.datastructures import ContentSecurityPolicy, ImmutableHeadersMixin
-from app import client, db
+from app import db
 import random
 import string
 import uuid
@@ -128,7 +128,7 @@ class ClientDetails(db.Model):
     vat = db.Column(db.String(60), nullable = False)
     commerce = db.Column(db.String(60), nullable = False)
 
-    def __init__(self, clint, address, zip, city, country, email, phone, vat, commerce):
+    def __init__(self, client, address, zip, city, country, email, phone, vat, commerce):
         self.client = client.id
         self.address = address
         self.zip = zip
@@ -311,6 +311,5 @@ class BankAccount(db.Model):
         self.iban = iban
         self.currency = curreny.id
         self.uuid = uuid.uuid1
-
 
 db.create_all()
