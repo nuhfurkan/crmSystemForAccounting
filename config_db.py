@@ -1,13 +1,17 @@
+import re
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import MetaData, Table, Column, Integer, String
 import pymysql
 import sqlalchemy
+from sqlalchemy.orm import column_property
+from werkzeug.datastructures import ContentSecurityPolicy
 from app import client, db
 import random
 import string
 import uuid
+import datetime
 
 class ToVerify(db.Model):
     __tablename__ = "ToVerify"
@@ -84,5 +88,76 @@ class Currency(db.Model):
     def __init__(self, name, code):
         self.name = name
         self.code = code
+
+class ClientDetails(db.Model):
+    __tablename__ = "ClientDetails"
+    id = db.Column(db.Integer, primary_key = True)
+    client = db.Column(db.Integer, db.ForeignKey("Client.id"), nullable = False)
+    address = db.Column(db.String(160), nullable = False)
+    zip = db.Column(db.String(20), nullable = False)
+    city = db.Column(db.String(60), nullable = False)
+    country = db.Column(db.String(60), nullable = False)
+    email = db.Column(db.String(60), nullable = False)
+    phone = db.Column(db.String(15), nullable = False)
+    vat = db.Column(db.String(60), nullable = False)
+    commerce = db.Column(db.String(60), nullable = False)
+
+    def __init__(self, clint, address, zip, city, country, email, phone, vat, commerce):
+        self.client = client.id
+        self.address = address
+        self.zip = zip
+        self.city = city
+        self.country = country
+        self.email = email
+        self.phone = phone
+        self.vat = vat
+        self.commerce = commerce
+
+class Invoice(db.Model):
+    __tablename__ = "Invoice"
+    id = db.Column(db.Integer, primary_key = True)
+    client = db.Column(db.Integer, db.ForeignKey("Client.id"), nullable = False)
+    currency = db.Column(db.Integer, db.ForeignKey("Currency.id"), nullable = False)
+    uuid = db.Column(db.String(120))
+    referance = db.Column(db.Integer, db.ForeignKey("Users.id"), nullable = True)
+
+    def __init__(self, client, currency):
+        self.client = client.id
+        self.currency = currency.id
+
+    def __init__(self, client, currency, referance):
+        self.client = client.id
+        self.currency = currency.id
+        self.referance = referance.id
+
+class InvoiceSent(db.Model):
+    __tablename__ = "InvoiceSent"
+    id = db.Column(db.Integer, primary_key = True)
+    date = db.Column(db.DateTime)
+    invoice = db.Column(db.Integer, db.ForeignKey("Invoice.id"), nullable = False)
+
+    def __init__(self, invoice):
+        self.date = datetime.datetime.utcnow()
+        self.invoice = invoice.id
+
+class InvoiceViewed(db.Model):
+    __tablename__ = "InvoiceViewed"
+    id = db.Column(db.Integer, primary_key = True)
+    date = db.Column(db.DateTime)
+    invoice = db.Column(db.Integer, db.ForeignKey("Invoice.id"), nullable = False)
+
+    def __init__(self, invoice):
+        self.date = datetime.datetime.utcnow()
+        self.invoice = invoice.id
+
+class InvoicePaid(db.Model):
+    __tablename__ = "InvoicePaid"
+    id = db.Column(db.Integer, primary_key = True)
+    date = db.Column(db.DateTime)
+    invoice = db.Column(db.Integer, db.ForeignKey("Invoice.id"), nullable = False)
+
+    def __init__(self, invoice):
+        self.date = datetime.datetime.utcnow()
+        self.invoice = invoice.id
 
 db.create_all()
