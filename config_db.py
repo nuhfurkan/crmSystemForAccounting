@@ -4,9 +4,10 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import MetaData, Table, Column, Integer, String
 import pymysql
 import sqlalchemy
-from app import db
+from app import client, db
 import random
 import string
+import uuid
 
 class ToVerify(db.Model):
     __tablename__ = "ToVerify"
@@ -39,5 +40,49 @@ class Users(db.Model):
         self.last_name = last_name
         self.user_name = user_name
         self.user_pass = user_pass
+
+class CLientAccount(db.Model):
+    __tablename__ = "ClientAccount"
+    id = db.Column(db.Integer, primary_key = True)
+    Client = db.Column(db.Integer, db.ForeignKey('Client.id'), nullable = False)
+    User = db.Column(db.Integer, db.ForeignKey("Users.id"), nullable = False)
+
+    def __init__(self, user, client):
+        self.User = user.id
+        user.Client = client.id
+
+class Client(db.Model):
+    __tablename__ = "Client"
+    id = db.Column(db.Integer, primary_key = True)
+    first_name = db.Column(db.String(60))
+    last_name = db.Column(db.String(60))
+    company = db.Column(db.Integer, db.ForeignKey("Company.id"), nullable = False)
+    uuid = db.Column(db.String(120))
+
+    def __init__(self, f_name, l_name, company):
+        self.first_name = f_name
+        self.last_name = l_name
+        self.company = company.id 
+        self.uuid = uuid.uuid1
+
+class Company(db.Model):
+    __tablename__ = "Company"
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(60), nullable = False)
+    default_currency = db.Column(db.Integer, db.ForeignKey("Currency.id"), nullable = False)
+
+    def __init__(self, name, curreny):
+        self.name = name
+        self.default_currency = curreny
+
+class Currency(db.Model):
+    __tablename__ = "Currency"
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String(30), nullable = False)
+    code = db.Column(db.String(5), nullable = False)
+
+    def __init__(self, name, code):
+        self.name = name
+        self.code = code
 
 db.create_all()
