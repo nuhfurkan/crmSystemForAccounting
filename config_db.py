@@ -1,4 +1,6 @@
+from os import name
 import re
+from typing import Iterable
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
@@ -6,7 +8,7 @@ from sqlalchemy import MetaData, Table, Column, Integer, String
 import pymysql
 import sqlalchemy
 from sqlalchemy.orm import column_property
-from werkzeug.datastructures import ContentSecurityPolicy
+from werkzeug.datastructures import ContentSecurityPolicy, ImmutableHeadersMixin
 from app import client, db
 import random
 import string
@@ -79,6 +81,30 @@ class Company(db.Model):
         self.name = name
         self.default_currency = curreny
 
+class CompanyDetails(db.Model):
+    __tablename__ = "CompanyDetails"
+    id = db.Column(db.Integer, primary_key = True)
+    company = db.Column(db.Integer, db.ForeignKey("Company.id"), nullable = False)
+    address = db.Column(db.String(160), nullable = False)
+    zip = db.Column(db.String(20), nullable = False)
+    city = db.Column(db.String(60), nullable = False)
+    country = db.Column(db.String(60), nullable = False)
+    email = db.Column(db.String(60), nullable = False)
+    phone = db.Column(db.String(15), nullable = False)
+    vat_id = db.Column(db.String(60), nullable = False)
+    commerce_id = db.Column(db.String(60), nullable = False)
+
+    def __init__(self, company, address, zip, city, country, email, phone, vat_id, commerce_id):
+        self.companc = company.id
+        self.address = address
+        self.zip = zip
+        self.city = city
+        self.country = country
+        self.email = email
+        self.phone = phone
+        self.vat_id = vat_id
+        self.commerce_id = commerce_id
+
 class Currency(db.Model):
     __tablename__ = "Currency"
     id = db.Column(db.Integer, primary_key = True)
@@ -124,11 +150,15 @@ class Invoice(db.Model):
     def __init__(self, client, currency):
         self.client = client.id
         self.currency = currency.id
+        self.uuid = uuid.uuid1
+
 
     def __init__(self, client, currency, referance):
         self.client = client.id
         self.currency = currency.id
         self.referance = referance.id
+        self.uuid = uuid.uuid1
+
 
 class InvoiceSent(db.Model):
     __tablename__ = "InvoiceSent"
@@ -159,5 +189,128 @@ class InvoicePaid(db.Model):
     def __init__(self, invoice):
         self.date = datetime.datetime.utcnow()
         self.invoice = invoice.id
+
+class InvoiceItem(db.Model):
+    __tablename__ = "InvoiceItem"
+    id = db.Column(db.Integer, primary_key = True)
+    invoice = db.Column(db.Integer, db.ForeignKey("Invoice.id"), nullable = False)
+    price = db.Column(db.Float, nullable = False)
+    amount = db.Column(db.Integer, nullable = False)
+    item = db.Column(db.Integer, db.ForeignKey("Item.id"), nullable = False)
+
+    def __init__(self, price, amount, invoice, item):
+        self.invoice = invoice.id
+        self.price = price
+        self.amount = amount
+        self.item = item.id
+
+class Item(db.Model):
+    __tablename__ = "Item"
+    id = db.Column(db.Integer, primary_key = True)
+    company = db.Column(db.Integer, db.ForeignKey("Company.id"))
+    description = db.Column(db.String(240))
+    default_price = db.Column(db.Float)
+    uuid = db.Column(db.String(120))
+
+    def __init__(self, company, description, default_price):
+        self.company = company.id
+        self.description = description
+        self.default_price = default_price
+        self.uuid = uuid.uuid1
+
+class BillItem(db.Model):
+    __tablename__ = "BillItem"
+    id = db.Column(db.Integer, primary_key = True)
+    bill = db.Column(db.Integer, db.ForeignKey("Bill.id"), nullable = False)
+    item = db.Column(db.Integer, db.ForeignKey("Item.id"), nullable = False)
+    price = db.Column(db.Float, nullable = False)
+    amount = db.Column(db.Integer, nullable = False)
+
+    def __init__(self, bill, item, price, amount):
+        self.bill = bill.id
+        self.item = item.id
+        self.price = price
+        self.amount = amount
+
+class Bill(db.Model):
+    __tablename__ = "Bill"
+    id = db.Column(db.Integer, primary_key = True)
+    vendor = db.Column(db.Integer, db.ForeignKey("Vendor.id"), nullable = False)
+    currency = db.Column(db.Integer, db.ForeignKey("Currency.id"), nullable = False)
+    date = db.Column(db.DateTime)
+    uuid = db.Column(db.String(120))
+    referance = db.Column(db.Integer, db.ForeignKey("Users.id"), nullable = True)
+
+    def __init__(self, vendor, currency, referance):
+        self.vendor = vendor.id
+        self.currency = currency.id
+        self.referance = referance
+        self.uuid = uuid.uuid1
+        self.date = datetime.datetime.utcnow()
+
+class Vendor(db.Model):
+    __tablename__ = "Vendor"
+    id = db.Column(db.Integer, primary_key = True)
+    company = db.Column(db.Integer, db.ForeignKey("Company.id"))
+    name = db.Column(db.String(30))
+    uuid = db.Column(db.String(120))
+
+    def __init__(self, name, company):
+        self.name = name
+        self.company = company.id
+        self.uuid = uuid.uuid1
+
+class VendorDetails(db.Model):
+    __tablename__ = "VendorDetails"
+    id = db.Column(db.Integer, primary_key = True)
+    vendor = db.Column(db.Integer, db.ForeignKey("Vendor.id"), nullable = False)
+    address = db.Column(db.String(160), nullable = False)
+    zip = db.Column(db.String(20), nullable = False)
+    city = db.Column(db.String(60), nullable = False)
+    country = db.Column(db.String(60), nullable = False)
+    email = db.Column(db.String(60), nullable = False)
+    phone = db.Column(db.String(15), nullable = False)
+    vat = db.Column(db.String(60), nullable = False)
+    commerce = db.Column(db.String(60), nullable = False)
+
+    def __init__(self, vendor, address, zip, city, country, email, phone, vat, commerce):
+        self.vendor = vendor.id
+        self.address = address
+        self.zip = zip
+        self.city = city
+        self.country = country
+        self.email = email
+        self.phone = phone
+        self.vat = vat
+        self.commerce = commerce
+
+class Employee(db.Model):
+    __tablename__ = "Employee"
+    id = db.Column(db.Integer, primary_key = True)
+    company = db.Column(db.Integer, db.ForeignKey("Company.id"), nullable = False)
+    user = db.Column(db.Integer, db.ForeignKey("Users.id"), nullable = False)
+
+    def __init__(self, company, user):
+        self.company = company.id
+        self.user = user.id
+
+class BankAccount(db.Model):
+    __tablename__ = "BankAccount"
+    id = db.Column(db.Integer, primary_key = True)
+    company = db.Column(db.Integer, db.ForeignKey("Company.id"), nullable = False)
+    start_amount = db.Column(db.Float, nullable = False)
+    name = db.Column(db.String(30))
+    iban = db.Column(db.String(120))
+    uuid = db.Column(db.String(120))
+    currency = db.Column(db.Integer, db.ForeignKey("Currency.id"), nullable = False)
+
+    def __init__(self, start_amount, name, iban, curreny, company):
+        self.company = company.id
+        self.start_amount = start_amount
+        self.name = name
+        self.iban = iban
+        self.currency = curreny.id
+        self.uuid = uuid.uuid1
+
 
 db.create_all()
