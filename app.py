@@ -11,16 +11,6 @@ app.config ['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:@localhost/crmDat
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-class Suggestion(db.Model):
-    __tablename__ = 'suggestions'
-    id   = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(100))
-
-    def __init__( self, name ):
-        self.name = name
-
-db.create_all()
-
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -34,4 +24,4 @@ def employee():
     return render_template("employee.html")
 
 if __name__ == "__main__":
-    app.run(port=3306, debug = True)
+    app.run(port=5000, debug = True)
