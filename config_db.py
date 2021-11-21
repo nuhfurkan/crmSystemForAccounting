@@ -6,10 +6,8 @@ import pymysql
 import sqlalchemy
 from app import db
 
-app = Flask(__name__)
-
 class Suggestion(db.Model):
-    __tablename__ = 'second'
+    __tablename__ = 'third'
     id   = db.Column(db.Integer, primary_key = True)
     name = db.Column(db.String(100))
 
@@ -17,4 +15,3 @@ class Suggestion(db.Model):
         self.name = name
 
 db.create_all()
-print("done")
