@@ -1,6 +1,7 @@
 from audioop import add
 import email
 from hashlib import new
+from locale import currency
 from flask import Flask, render_template, url_for, request, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
@@ -8,7 +9,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 import pymysql
 import sqlalchemy
 from auth import User, verificationComplete
-from config_db import Company, Employee, ToVerify, Vendor, VendorDetails, app
+from config_db import BankAccount, Company, Currency, Employee, ToVerify, Vendor, VendorDetails, app
 
 app.secret_key = "somekey"
 
@@ -129,11 +130,22 @@ def createNewVendor():
 # employee add new BankAccount
 @app.route("/newBankAccount")
 def newBankAccountPage():
-    return render_template("newBankAccount.html", ses_type=session["type"])
+    currencies = Currency.query.all()
+    return render_template("newBankAccount.html", ses_type=session["type"], currency_data=currencies)
 
 @app.route("/newBankAccount", methods=["POST", "GET"])
 def newBankAccount():
-    return render_template("newBankAccount.html", message="something went wrong", ses_type=session["type"])
+    currencies = Currency.query.all()
+    init_amount = request.form["init_amount"]
+    name = request.form["account_name"]
+    iban = request.form["account_iban"]
+    currency = request.form.get("currency")
+    selected_currency = Currency.query.filter_by(name=currency).first()
+    thecompany = Company.query.filter_by(id=session["company"]).first()
+    new_account = BankAccount(start_amount=init_amount, name=name, iban=iban, curreny=selected_currency, company=thecompany)
+    if new_account.createAccount():
+        return render_template("messagePage.html", my_message="new account created succesfully", ses_type=session["type"])
+    return render_template("newBankAccount.html", message="something went wrong", ses_type=session["type"], currency_data=currencies)
 
 # admin sign in section
 # admin add new currency

@@ -363,7 +363,13 @@ class BankAccount(db.Model):
         self.name = name
         self.iban = iban
         self.currency = curreny.id
-        self.uuid = uuid.uuid1
+        self.uuid = uuid.uuid1()
+
+    def createAccount(self):
+        db.session.add(self)
+        db.session.commit()
+        print("new account created")
+        return True
 
 def config_init():
     db.create_all()

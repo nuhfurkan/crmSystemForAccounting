@@ -8,4 +8,20 @@
 <!-- THIS PART IS FOR THE BODY -->
 {% block body %}
 <p> new bank account page </p>
+<form action="" method="POST">
+    <label for="account_name">account name: </label>
+    <input type="text" name="account_name" id="">
+    <label for="account_iban">iban: </label>
+    <input type="text" name="account_iban" id="">
+    <label for="init_amount">initial amount: </label>
+    <input type="text" name="init_amount" id="">
+    <label for="currency">currency: </label>
+    <select name="currency" id="">
+        {% for o in currency_data %}
+          <option value="{{ o.name }}">{{ o.name }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="submit">
+    {{ message }}
+</form>
 {% endblock%}
