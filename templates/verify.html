@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+<!-- THIS PART IS FOR THE HEAD -->
+{% block head %}
+<title>verify</title>
+{% endblock%}
+
+<!-- THIS PART IS FOR THE BODY -->
+{% block body %}
+<p> verify page </p>
+<form action="" method="POST">
+    <label for="user_email">email: </label>
+    <input type="email" name="user_email" id="">
+    <label for="verif_code">verification code: </label>
+    <input type="text" name="verif_code" id="">
+    <label for="type">type: </label>
+    <select name="type" id="">
+        <option value="client">client</option>
+        <option value="employee">employee</option>
+    </select>
+    <label for="companies">company: </label>
+    <select name="companies" id="">
+        {% for o in company_data %}
+          <option value="{{ o.name }}">{{ o.name }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="">
+</form>
+{% endblock%}
