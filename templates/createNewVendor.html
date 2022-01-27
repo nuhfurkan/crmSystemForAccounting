@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+<!-- THIS PART IS FOR THE HEAD -->
+{% block head %}
+<title>new vendor</title>
+{% endblock%}
+
+<!-- THIS PART IS FOR THE BODY -->
+{% block body %}
+<p> new vendor page </p>
+<form action="" method="POST">
+    <h2>Create a new vendor</h2>
+    <label for="vendor_name">vendor name: </label>
+    <input type="text" name="vendor_name" id="">
+    
+    <!-- VENDOR DETAILS -->
+    <label for="vendor_address">vendor address: </label>
+    <input type="text" name="vendor_address" id="">
+    <label for="vendor_zip">vendor zip: </label>
+    <input type="text" name="vendor_zip" id="">
+    <label for="vendor_city">vendor city: </label>
+    <input type="text" name="vendor_city" id="">
+    <label for="vendor_country">vendor country: </label>
+    <input type="text" name="vendor_country" id="">
+    <label for="vendor_email">vendor email: </label>
+    <input type="email" name="vendor_email" id="">
+    <label for="vendor_phone">vendor phone: </label>
+    <input type="text" name="vendor_phone" id="">
+    <label for="vendor_vat">vendor vat no: </label>
+    <input type="text" name="vendor_vat" id="">
+    <label for="vendor_commerce">vendor commerce no: </label>
+    <input type="text" name="vendor_commerce" id="">
+
+    <input type="submit" value="submit">
+    {{ message }}
+</form>
+{% endblock%}

@@ -293,7 +293,13 @@ class Vendor(db.Model):
     def __init__(self, name, company):
         self.name = name
         self.company = company.id
-        self.uuid = uuid.uuid1
+        self.uuid = uuid.uuid1()
+
+    def newVendor(self):
+        db.session.add(self)
+        db.session.commit()
+        print("new vendor created")
+        return True
 
 class VendorDetails(db.Model):
     __tablename__ = "VendorDetails"
@@ -318,6 +324,12 @@ class VendorDetails(db.Model):
         self.phone = phone
         self.vat = vat
         self.commerce = commerce
+
+    def newVendorDetails(self):
+        db.session.add(self)
+        db.session.commit()
+        print("new vendor details added")
+        return True
 
 class Employee(db.Model):
     __tablename__ = "Employee"

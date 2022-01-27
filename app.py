@@ -1,3 +1,5 @@
+from audioop import add
+import email
 from hashlib import new
 from flask import Flask, render_template, url_for, request, session
 from flask_sqlalchemy import SQLAlchemy
@@ -6,7 +8,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 import pymysql
 import sqlalchemy
 from auth import User, verificationComplete
-from config_db import Company, ToVerify, app
+from config_db import Company, Employee, ToVerify, Vendor, VendorDetails, app
 
 app.secret_key = "somekey"
 
@@ -57,9 +59,10 @@ def employeeEnter():
     username = request.form["name"]
     userpass = request.form["password"]
     newUser = User(username, userpass)
-    if newUser.auth_employee() != False:
+    if newUser.auth_employee() == True:
         session["type"] = "employee"
-        session["id"] = newUser.id
+        session["user"] = newUser.id
+        session["company"] = Employee.query.filter_by(user=newUser.id).first().company
         return render_template("index.html", name=newUser.id, idexists=newUser.id, ses_type=session["type"])
     return render_template('sign.html', invalid="incorrect entry")
 
@@ -75,7 +78,7 @@ def clientEnter():
     newUser = User(username, userpass)
     if newUser.auth_client() != False:
         session["type"] = "client"
-        session["id"] = newUser.id
+        session["user"] = newUser.id
         return render_template("index.html", name=newUser.id, idexists=newUser.id, ses_type=session["type"])
     return render_template('sign.html', invalid="incorrect entry")
 
@@ -97,21 +100,54 @@ def verify():
     else:
         return render_template("verify.html", company_data=all_companies)
 
-# message page
-@app.route("/messagePage")
-def messagePage():
-    return render_template("messagePage.html")
+# employee add new vendor
+@app.route("/createNewVendor")
+def createNewVendorPage():
+    return render_template("createNewVendor.html", ses_type=session["type"])
+
+@app.route("/createNewVendor", methods=["POST", "Get"])
+def createNewVendor():
+    vendor_name = request.form["vendor_name"]
+    
+    vendor_address = request.form["vendor_address"]
+    vendor_zip = request.form["vendor_zip"]
+    vendor_city = request.form["vendor_city"]
+    vendor_country = request.form["vendor_country"]
+    vendor_email = request.form["vendor_email"]
+    vendor_phone = request.form["vendor_phone"]
+    vendor_vat = request.form["vendor_vat"]
+    vendor_commerce = request.form["vendor_commerce"]
+
+    thecompany = Company.query.filter_by(id=session["company"]).first()
+    new_vendor = Vendor(name=vendor_name, company=thecompany)
+    if new_vendor.newVendor():
+        new_vendor_det = VendorDetails(vendor=new_vendor, address=vendor_address, zip=vendor_zip, city=vendor_city, country=vendor_country, email=vendor_email, phone=vendor_phone, vat=vendor_vat, commerce=vendor_commerce)
+        if new_vendor_det.newVendorDetails():
+            return render_template("messagePage.html", my_message="created new vendor", ses_type=session["type"])
+    return render_template("createNewVendor.html", message="something went wrong", ses_type=session["type"])
+
+# employee add new BankAccount
+@app.route("/newBankAccount")
+def newBankAccountPage():
+    return render_template("newBankAccount.html", ses_type=session["type"])
+
+@app.route("/newBankAccount", methods=["POST", "GET"])
+def newBankAccount():
+    return render_template("newBankAccount.html", message="something went wrong", ses_type=session["type"])
 
 # admin sign in section
 # admin add new currency
 # admin add new company
 
-# employee add new vendor
-
-# employee ad new BankAccount
 # client add invoice
+
 # employee response invoice
 # employee create bill
+
+# message page
+@app.route("/messagePage")
+def messagePage():
+    return render_template("/messagePage.html")
 
 # run the app
 if __name__ == "__main__":
