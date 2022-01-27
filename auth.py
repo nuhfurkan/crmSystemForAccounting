@@ -1,4 +1,3 @@
-from tkinter.font import names
 from config_db import CLientAccount, Company, Employee, ToVerify, Users, db, Client
 
 class User():

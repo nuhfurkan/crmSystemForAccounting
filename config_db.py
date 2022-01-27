@@ -1,7 +1,6 @@
 from distutils.command.build_scripts import first_line_re
 from os import name
 import re
-from typing import Iterable
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
