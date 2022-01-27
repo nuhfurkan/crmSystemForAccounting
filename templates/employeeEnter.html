@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+<!-- THIS PART IS FOR THE HEAD -->
+{% block head %}
+<title>Employee Enter</title>
+{% endblock%}
+
+<!-- THIS PART IS FOR THE BODY -->
+{% block body %}
+<h1>Employee Enter page</h1>
+    <form method="POST" action="">
+        <label for="name">name: </label>
+        <input type="text" name="name" id="">
+        <label for="password">password: </label>
+        <input type="password" name="password" id="">
+        <input type="submit" value="enter">
+        <p>{{invalid}}</p>
+        <a href="register">already have an account</a>
+    </form>
+{% endblock%}
