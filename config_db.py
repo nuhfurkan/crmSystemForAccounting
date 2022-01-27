@@ -9,11 +9,15 @@ import pymysql
 import sqlalchemy
 from sqlalchemy.orm import column_property
 from werkzeug.datastructures import ContentSecurityPolicy, ImmutableHeadersMixin
-from app import db
 import random
 import string
 import uuid
 import datetime
+
+app = Flask(__name__)
+app.config ['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:@localhost/crmDatabase?unix_socket=/Applications/XAMPP/xamppfiles/var/mysql/mysql.sock"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
 
 class ToVerify(db.Model):
     __tablename__ = "ToVerify"
@@ -31,7 +35,13 @@ class ToVerify(db.Model):
         self.user_name = user_name
         self.user_pass = user_pass
         self.email = email
-        self.verification_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 20))    
+        self.verification_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k = 20))
+
+    def addToVerify(self):
+        db.session.add(self)
+        db.session.commit()   
+        print("new user added toveirfy")
+        return True
 
 class Users(db.Model):
     __tablename__ = "Users"
@@ -312,4 +322,5 @@ class BankAccount(db.Model):
         self.currency = curreny.id
         self.uuid = uuid.uuid1
 
-db.create_all()
+def config_init():
+    db.create_all()
