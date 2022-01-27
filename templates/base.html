@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/css/base.css">
+
     <!-- REFERANCE FOR HEAD -->
     {% block head %} {% endblock %}
 </head>
@@ -24,8 +25,21 @@
             <p>welcome {{ idexists }}</p>
         {% else %}
             <!-- NAV-BAR FOR NON-REGISTEREE -->
-            <p> you need to log in</p>
         {% endif %}
+        <nav>
+            <input type="checkbox" id="check">
+            <label for="check" class="checkbtn">
+              <i class="fas fa-bars"></i>
+            </label>
+            <label class="logo">DesignX</label>
+            <ul>
+              <li><a class="active" href="#">Home</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Services</a></li>
+              <li><a href="#">Contact</a></li>
+              <li><a href="#">Feedback</a></li>
+            </ul>
+          </nav>
         <!-- NAVIGATION WILL BE HERE -->
     </nav>
     

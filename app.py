@@ -46,14 +46,14 @@ def register_submit():
         return render_template("register.html", invalid="no matching passwords")
     newToVerify = ToVerify(name, surname, user_name, user_pass, email)
     if newToVerify.addToVerify():
-        return render_template("index.html", name=name)
+        return render_template("messagePage.html", my_message="waiting for verification")
     else:
         return render_template("register.html", invalid="something went wrong")
 
 # employee sign in section
 @app.route("/employeeEnter")
 def employeeEnterPage():
-    return render_template("employeeEnter.html")
+    return render_template("employeeEnter.html", ses_type=session["type"])
 
 @app.route("/employeeEnter", methods=["POST", "GET"])
 def employeeEnter():
