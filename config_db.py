@@ -1,3 +1,4 @@
+from distutils.command.build_scripts import first_line_re
 from os import name
 import re
 from typing import Iterable
@@ -43,6 +44,12 @@ class ToVerify(db.Model):
         print("new user added toveirfy")
         return True
 
+    def delToVerify(self):
+        db.session.delete(self)
+        db.session.commit()
+        print("deleted toVeriy with name " + self.first_name + " " + self.last_name + " with id " + str(self.id))
+        return True
+
 class Users(db.Model):
     __tablename__ = "Users"
     id = db.Column(db.Integer, primary_key = True)
@@ -50,6 +57,12 @@ class Users(db.Model):
     last_name = db.Column(db.String(60))
     user_name = db.Column(db.String(60))
     user_pass = db.Column(db.String(60))
+
+    def addToUsers(self):
+        db.session.add(self)
+        db.session.commit()
+        print("new user added to users")
+        return True
 
     def __init__(self, firs_name, last_name, user_name, user_pass):
         self.first_name = firs_name
@@ -65,7 +78,13 @@ class CLientAccount(db.Model):
 
     def __init__(self, user, client):
         self.User = user.id
-        user.Client = client.id
+        self.Client = client.id
+
+    def addToClientAccount(self):
+        db.session.add(self)
+        db.session.commit()
+        print("new ClinetAccount added")
+        return True
 
 class Client(db.Model):
     __tablename__ = "Client"
@@ -80,6 +99,12 @@ class Client(db.Model):
         self.last_name = l_name
         self.company = company.id 
         self.uuid = uuid.uuid1
+
+    def addToClient(self):
+        db.session.add(self)
+        db.session.commit()
+        print("new client added")
+        return True
 
 class Company(db.Model):
     __tablename__ = "Company"
@@ -303,6 +328,12 @@ class Employee(db.Model):
     def __init__(self, company, user):
         self.company = company.id
         self.user = user.id
+
+    def addToEmployee(self):
+        db.session.add(self)
+        db.session.commit()
+        print("new employee added")
+        return True
 
 class BankAccount(db.Model):
     __tablename__ = "BankAccount"

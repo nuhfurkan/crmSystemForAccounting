@@ -10,6 +10,23 @@
 </head>
 <body>
     <nav>
+        {% if idexists != None %}
+            {% if ses_type == "employee" %}
+                <!-- NAV-BAR FOR EMPLOYEE -->
+                <p>you entered as an employee</p>
+            {% elif ses_type == "client" %}
+                <!-- NAV-BAR FOR CLIENT -->
+                <p>you entered as a client</p>
+            {% elif ses_type == "admin" %}
+                <!-- NAV-BAR FOR ADMIN -->
+                <p>you entered as a admin</p>
+            {% endif %}
+            <p>welcome {{ idexists }}</p>
+        {% else %}
+            <!-- NAV-BAR FOR NON-REGISTEREE -->
+            <p> you need to log in</p>
+        {% endif %}
+
         <!-- NAVIGATION WILL BE HERE -->
     </nav>
     

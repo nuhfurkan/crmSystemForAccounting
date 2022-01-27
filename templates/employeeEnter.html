@@ -13,6 +13,11 @@
         <input type="text" name="name" id="">
         <label for="password">password: </label>
         <input type="password" name="password" id="">
+        <select name="companies" id="">
+            {% for o in company_data %}
+              <option value="{{ o.name }}">{{ o.name }}</option>
+            {% endfor %}
+        </select>
         <input type="submit" value="enter">
         <p>{{invalid}}</p>
         <a href="register">already have an account</a>
