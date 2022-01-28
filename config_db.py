@@ -198,7 +198,7 @@ class ClientDetails(db.Model):
     commerce = db.Column(db.String(60), nullable = False)
 
     def __init__(self, client, address, zip, city, country, email, phone, vat, commerce):
-        self.client = client.id
+        self.client = client
         self.address = address
         self.zip = zip
         self.city = city
@@ -207,6 +207,12 @@ class ClientDetails(db.Model):
         self.phone = phone
         self.vat = vat
         self.commerce = commerce
+
+    def clientUpdate(self):
+        #ClientDetails.query.filter_by(id = self.id).first().update(self)
+        db.session.add(self)
+        db.session.commit()
+        return True
 
 class Invoice(db.Model):
     __tablename__ = "Invoice"

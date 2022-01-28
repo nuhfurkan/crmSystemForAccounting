@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+<!-- THIS PART IS FOR THE HEAD -->
+{% block head %}
+<title>client settings</title>
+{% endblock%}
+
+<!-- THIS PART IS FOR THE BODY -->
+{% block body %}
+<p> Client settings page </p>
+<form action="/clientSettingsUpdate" method="POST">
+    <label for="address">address: </label>
+    <input type="text" name="address" value="{{ data.address }}" id="">
+    <label for="zip">zip </label>
+    <input type="text" name="zip" value="{{ data.zip }}" id="">
+    <label for="city">city: </label>
+    <input type="text" name="city" value="{{ data.city }}" id="">
+    <label for="country">country: </label>
+    <input type="text" name="country" value="{{ data.country }}" id="">
+    <label for="email">email: </label>
+    <input type="text" name="email" value="{{ data.email }}" id="">
+    <label for="phone">phone: </label>
+    <input type="text" name="phone" value="{{ data.phone }}" id="">
+    <label for="vat">vat no:</label>
+    <input type="text" name="vat" value="{{ data.vat }}" id="">
+    <label for="commerce">commerce id:</label>
+    <input type="text" name="commerce" value="{{ data.commerce }}" id="">
+    <input type="submit" value="submit">
+</form>
+{% endblock%}

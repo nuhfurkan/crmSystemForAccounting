@@ -1,7 +1,10 @@
 from audioop import add
+from crypt import methods
 import email
 from hashlib import new
 from locale import currency
+from multiprocessing.connection import Client
+from socketserver import ThreadingUnixStreamServer
 from flask import Flask, render_template, url_for, request, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
@@ -9,7 +12,7 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 import pymysql
 import sqlalchemy
 from auth import User, verificationComplete
-from config_db import Admin, BankAccount, Company, Currency, Employee, ToVerify, Vendor, VendorDetails, app
+from config_db import Admin, BankAccount, CLientAccount, ClientDetails, Company, Currency, Employee, ToVerify, Vendor, VendorDetails, app
 
 
 app.secret_key = "somekey"
@@ -81,8 +84,8 @@ def clientEnter():
     if newUser.auth_client() != False:
         session["type"] = "client"
         session["user"] = newUser.id
-        return render_template("index.html", name=newUser.id, idexists=newUser.id, ses_type=session["type"])
-    return render_template('sign.html', invalid="incorrect entry")
+        return render_template("client.html", name=newUser.id, idexists=newUser.id, ses_type=session["type"])
+    return render_template('clientEnter.html', invalid="incorrect entry")
 
 # verify
 @app.route("/verify")
@@ -232,8 +235,45 @@ def addToCompanies():
             return companiesPage()
     return render_template("companies.html", message="something went wrong")
 
-# client add invoice
+# client settings
+@app.route("/clientSettings", methods=["GET", "POST"])
+def clientSettingsPage():
+    if session["type"] != "client":
+        return render_template("index.html", ses_type=session["type"])
+    thisData = {}
+    clAccount = CLientAccount.query.filter_by(User=session["user"]).first()
+    clientData = ClientDetails.query.filter_by(id=clAccount.id).first()
+    if clientData != None:
+        thisData["address"] = clientData.address
+        thisData["zip"] = clientData.zip
+        thisData["city"] = clientData.city
+        thisData["country"] = clientData.country
+        thisData["email"] = clientData.email
+        thisData["phone"] = clientData.phone
+        thisData["vat"] = clientData.vat
+        thisData["commerce"] = clientData.commerce
+    return render_template("clientSettings.html", data=thisData)
 
+@app.route("/clientSettingsUpdate", methods=["POST", "GET"])
+def clientSettingsUpdate():
+    address = request.form["address"]
+    zip = request.form["zip"]
+    city = request.form["city"]
+    country = request.form["country"]
+    email = request.form["email"]
+    phone = request.form["phone"]
+    vat = request.form["vat"]
+    commerce = request.form["commerce"]
+    id = CLientAccount.query.filter_by(User=session["user"]).first().Client
+
+    clSettings = ClientDetails(client=id, address=address, zip=zip, city=city, country=country, email=email, phone=phone, vat=vat, commerce=commerce)
+    clSettings.clientUpdate()
+    return clientSettingsPage()
+
+# client add invoice
+@app.route("/invoices", methods=["POST", "GET"])
+def invoicesPage():
+    return render_template("invoices.html")
 
 # employee response invoice
 # employee create bill
