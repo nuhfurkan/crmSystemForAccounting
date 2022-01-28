@@ -3,7 +3,7 @@ html,body{
     padding: 0px;
     list-style: none;
     box-sizing: border-box;
-    font-family: 'Rubik';
+    font-family: 'Roboto', sans-serif;
     letter-spacing: 3px;
 }
 
@@ -102,4 +102,38 @@ option{
 .file_submit:hover{
   background-color: white;
   color: #55acee
+}
+
+.adminSubmitButton{
+    padding: 1rem 1rem;
+    background-color: #55acee;
+    border-radius: 10px;
+    color: #ffffff;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.adminSubmitButton:hover{
+    background-color: #ffffff;
+
+
+}
+.adminAuthContainer{
+    display: flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content: center;
+    border-radius: 10%;
+    border-width: 1rem;
+
+}
+.adminAuthContainer > *{
+    margin: 1rem;
+}
+.adminNameInput, .adminPasswordInput, .currencyName, .currencyCode{
+    padding: .5rem;
+    border-radius: 10%;
+    border-width: 0.2rem;
+ 
 }

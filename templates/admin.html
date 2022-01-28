@@ -3,17 +3,23 @@
 <!-- THIS PART IS FOR THE HEAD -->
 {% block head %}
 <title>admin</title>
+<link rel="stylesheet" href="static/css/index.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 {% endblock%}
 
 <!-- THIS PART IS FOR THE BODY -->
 {% block body %}
 <p> admin page </p>
 <form action="" method="POST">
-    <label for="admin_name">admin name: </label>
-    <input type="text" name="admin_name" id="">
-    <label for="admin_pass">admin pass:</label>
-    <input type="text" name="admin_pass" id="">
-    <input type="submit" value="submit">
-    {{ message }}
+    <div class="adminAuthContainer">
+    <label for="admin_name">Admin Name </label>
+    <input class="adminNameInput" type="text" name="admin_name" id="">
+    <label for="admin_pass">Admin Password</label>
+    <input class="adminPasswordInput"type="password" name="admin_pass" id="">
+    <input class="adminSubmitButton" type="submit" value="Submit">
+    <p>{{ message }}</p>
+</div>
 </form>
 {% endblock%}

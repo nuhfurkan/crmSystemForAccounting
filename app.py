@@ -1,5 +1,4 @@
 from audioop import add
-from crypt import methods
 import email
 from hashlib import new
 from locale import currency
@@ -66,8 +65,8 @@ def employeeEnter():
         session["type"] = "employee"
         session["user"] = newUser.id
         session["company"] = Employee.query.filter_by(user=newUser.id).first().company
-        return render_template("index.html", name=newUser.id, idexists=newUser.id, ses_type=session["type"])
-    return render_template('sign.html', invalid="incorrect entry")
+        return render_template("employee.html", ses_type=session["type"])
+    return render_template('employeeEnter.html', invalid="incorrect entry")
 
 # client sign in section
 @app.route("/clientEnter")
@@ -156,12 +155,12 @@ def adminPage():
 
 @app.route("/admin", methods=["POST", "GET"])
 def admin():
-    admin_name = request.form["admin_page"]
+    admin_name = request.form["admin_name"]
     admin_pass = request.form["admin_pass"]
     admin = Admin.query.filter_by(admin_name=admin_name,admin_pass=admin_pass).first()
-    session["type"] = "admin"
-    session["user"] = admin.id
     if admin != None:
+        session["type"] = "admin"
+        #session["user"] = admin.id
         return render_template("adminPanel.html")
     return render_template("admin.html", message="invalid name or pass")
 
@@ -177,10 +176,7 @@ def currenciesPage():
         newdata["code"] = currency.code
         data.append(newdata)
 
-    for row in data:
-        print(row["name"])
-
-    return render_template("currencies.html", rowdata=data)
+    return render_template("currencies.html", rowdata=data, ses_type=session["type"])
 
 @app.route("/deleteRow")
 def deleteRow():
@@ -191,16 +187,50 @@ def deleteRow():
         return currenciesPage()
     return render_template("currencies.html", message="something went wrong")
 
-@app.route("/addToCurrencies")
+@app.route("/addToCurrencies", methods=["POST", "GET"])
 def addToCurrencies():
+    print("created new currency")
     cr_name = request.form["currency_name"]
     cr_code = request.form["currency_code"]
     newCr = Currency(name=cr_name, code=cr_code)
     if newCr.createCurrency():
-        return render_template("messagePage.html", my_message="succesfully created new currency")
+        return currenciesPage()
     return render_template("currencies.html", message="something went wrong")
 
 # admin add new company
+@app.route("/companies", methods=["POST", "GET"])
+def companiesPage():
+    companies = Company.query.all()
+    currencies = Currency.query.all()
+    data = []
+    for company in companies:
+        newdata = {}
+        newdata["id"] = company.id
+        newdata["name"] = company.name
+        newdata["default_currency"] = company.default_currency
+        data.append(newdata)
+    
+    return render_template("companies.html", rowdata=data, currency_data=currencies)
+
+@app.route("/deleteCompany")
+def deleteCompany():
+    mid = request.args.get("mid")
+    toDel = Company.query.filter_by(id=mid).first()
+    if toDel != None:
+        if toDel.delCompany():
+            return companiesPage()
+    return render_template("companies.html", message="something went wrong")
+
+@app.route("/addToCompanies", methods=["POST", "GET"])
+def addToCompanies():
+    companyname = request.form["company_name"]
+    def_currency = request.form["default_currency"]
+    mycurreny = Currency.query.filter_by(name=def_currency).first()
+    if mycurreny != None:
+        newComp = Company(name=companyname, curreny=mycurreny.id)
+        if newComp.addCompany():
+            return companiesPage()
+    return render_template("companies.html", message="something went wrong")
 
 # client add invoice
 

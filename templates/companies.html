@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+<!-- THIS PART IS FOR THE HEAD -->
+{% block head %}
+<title>companies</title>
+{% endblock%}
+
+<!-- THIS PART IS FOR THE BODY -->
+{% block body %}
+<p> companies page </p>
+<table>
+    <h2>companies</h2>
+    <tr>
+        <th>id</th>
+        <th>name</th>
+        <th>code</th>
+        <th>del</th>
+    </tr>
+    {% for row in rowdata %}
+    <tr>
+        <td> {{ row.id }} </td>
+        <td> {{ row.name }} </td>
+        <td> {{ row.default_currency }} </td>
+        <td>
+            <form action="/deleteCompany/" method="POST">
+                <a href="{{ url_for('deleteCompany', mid=row.id) }}"
+  onclick="return confirm('Do you want to permanently delete company {{ row.name }}?');" title="Delete company">delete</a>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<form action="/addToCompanies" method="POST">
+    <label for="company_name">company name:</label>
+    <input type="text" name="company_name" id="">
+    <label for="default_currency">select currency:</label>
+    <select name="default_currency" id="">
+        {% for o in currency_data %}
+          <option value="{{ o.name }}">{{ o.name }}</option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="submit">
+</form>
+{{ message }}
+{% endblock%}

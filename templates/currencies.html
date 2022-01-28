@@ -3,6 +3,7 @@
 <!-- THIS PART IS FOR THE HEAD -->
 {% block head %}
 <title>currencies</title>
+<link rel="stylesheet" href="static/css/index.css">
 {% endblock%}
 
 <!-- THIS PART IS FOR THE BODY -->
@@ -34,9 +35,9 @@
 
 <form action="/addToCurrencies" method="POST">
     <label for="currency_name">currency name:</label>
-    <input type="text" name="currency_name" id="">
+    <input type="text" name="currency_name" id="" class="currencyName">
     <label for="currency_code">currency code:</label>
-    <input type="text" name="currency_code" id="">
+    <input type="text" name="currency_code" id="" class="currencyCode">
     <input type="submit" value="submit">
 </form>
 

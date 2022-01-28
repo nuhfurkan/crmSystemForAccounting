@@ -1,6 +1,7 @@
 from distutils.command.build_scripts import first_line_re
 from os import name
 import re
+from tkinter.tix import Tree
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import SQLAlchemyError
@@ -125,6 +126,18 @@ class Company(db.Model):
         self.name = name
         self.default_currency = curreny
 
+    def delCompany(self):
+        db.session.delete(self)
+        db.session.commit()
+        print("company deleted")
+        return True
+
+    def addCompany(self):
+        db.session.add(self)
+        db.session.commit()
+        print("new company created")
+        return True
+
 class CompanyDetails(db.Model):
     __tablename__ = "CompanyDetails"
     id = db.Column(db.Integer, primary_key = True)
@@ -163,6 +176,12 @@ class Currency(db.Model):
         db.session.delete(self)
         db.session.commit()
         print("currency deleted")
+        return True
+
+    def createCurrency(self):
+        db.session.add(self)
+        db.session.commit()
+        print("new currency created")
         return True
 
 class ClientDetails(db.Model):
