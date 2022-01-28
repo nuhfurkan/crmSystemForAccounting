@@ -1,4 +1,5 @@
 from audioop import add
+from crypt import methods
 import email
 from hashlib import new
 from locale import currency
@@ -9,7 +10,8 @@ from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
 import pymysql
 import sqlalchemy
 from auth import User, verificationComplete
-from config_db import BankAccount, Company, Currency, Employee, ToVerify, Vendor, VendorDetails, app
+from config_db import Admin, BankAccount, Company, Currency, Employee, ToVerify, Vendor, VendorDetails, app
+
 
 app.secret_key = "somekey"
 
@@ -148,10 +150,60 @@ def newBankAccount():
     return render_template("newBankAccount.html", message="something went wrong", ses_type=session["type"], currency_data=currencies)
 
 # admin sign in section
+@app.route("/admin")
+def adminPage():
+    return render_template("admin.html")
+
+@app.route("/admin", methods=["POST", "GET"])
+def admin():
+    admin_name = request.form["admin_page"]
+    admin_pass = request.form["admin_pass"]
+    admin = Admin.query.filter_by(admin_name=admin_name,admin_pass=admin_pass).first()
+    session["type"] = "admin"
+    session["user"] = admin.id
+    if admin != None:
+        return render_template("adminPanel.html")
+    return render_template("admin.html", message="invalid name or pass")
+
 # admin add new currency
+@app.route("/currencies", methods=["POST", "GET"])
+def currenciesPage():
+    currencies = Currency.query.all()
+    data = []
+    for currency in currencies:
+        newdata = {}
+        newdata["id"] = currency.id
+        newdata["name"] = currency.name
+        newdata["code"] = currency.code
+        data.append(newdata)
+
+    for row in data:
+        print(row["name"])
+
+    return render_template("currencies.html", rowdata=data)
+
+@app.route("/deleteRow")
+def deleteRow():
+    mid = request.args.get("mid")
+    toDel = Currency.query.filter_by(id=mid).first()
+    if toDel != None:
+        toDel.delCurrency()
+        return currenciesPage()
+    return render_template("currencies.html", message="something went wrong")
+
+@app.route("/addToCurrencies")
+def addToCurrencies():
+    cr_name = request.form["currency_name"]
+    cr_code = request.form["currency_code"]
+    newCr = Currency(name=cr_name, code=cr_code)
+    if newCr.createCurrency():
+        return render_template("messagePage.html", my_message="succesfully created new currency")
+    return render_template("currencies.html", message="something went wrong")
+
 # admin add new company
 
 # client add invoice
+
 
 # employee response invoice
 # employee create bill
@@ -159,7 +211,7 @@ def newBankAccount():
 # message page
 @app.route("/messagePage")
 def messagePage():
-    return render_template("/messagePage.html")
+    return render_template("messagePage.html")
 
 # run the app
 if __name__ == "__main__":

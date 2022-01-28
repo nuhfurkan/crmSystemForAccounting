@@ -19,6 +19,16 @@ app.config ['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://root:@localhost/crmDat
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+class Admin(db.Model):
+    __tablename__ = "Admin"
+    id = db.Column(db.Integer, primary_key = True)
+    admin_name = db.Column(db.String(60))
+    admin_pass = db.Column(db.String(60))
+
+    def __init__(self, admin_name, admin_pass):
+        self.admin_name = admin_name
+        self.admin_pass = admin_pass
+
 class ToVerify(db.Model):
     __tablename__ = "ToVerify"
     id = db.Column(db.Integer, primary_key = True)
@@ -148,6 +158,12 @@ class Currency(db.Model):
     def __init__(self, name, code):
         self.name = name
         self.code = code
+
+    def delCurrency(self):
+        db.session.delete(self)
+        db.session.commit()
+        print("currency deleted")
+        return True
 
 class ClientDetails(db.Model):
     __tablename__ = "ClientDetails"

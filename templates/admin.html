@@ -9,6 +9,11 @@
 {% block body %}
 <p> admin page </p>
 <form action="" method="POST">
-    
+    <label for="admin_name">admin name: </label>
+    <input type="text" name="admin_name" id="">
+    <label for="admin_pass">admin pass:</label>
+    <input type="text" name="admin_pass" id="">
+    <input type="submit" value="submit">
+    {{ message }}
 </form>
 {% endblock%}
